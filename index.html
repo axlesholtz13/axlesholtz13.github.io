@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Stand Height Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2e7d32;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1b5e20;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            display: none;
+        }
+        .tree-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .tree-icon {
+            color: #2e7d32;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .error {
+            color: #d32f2f;
+            margin-top: 5px;
+            font-size: 14px;
+            display: none;
+        }
+        .formula {
+            background-color: #fffde7;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tree Stand Height Calculator</h1>
+        
+        <div class="input-group">
+            <label for="height">Tree Stand Height (H) in meters:</label>
+            <input type="number" id="height" placeholder="Enter height..." step="0.1" min="0">
+            <div class="error" id="error-message">Please enter a valid number for height.</div>
+        </div>
+        
+        <button onclick="calculate()">Calculate</button>
+        
+        <div class="result" id="result">
+            Result: <span id="output-value"></span>%
+        </div>
+        
+        <div class="tree-container" id="tree-container">
+            <div class="tree-icon" id="tree-icon">🌲</div>
+        </div>
+        
+        <div class="formula">
+            Formula: 100 × (1 - e^(-0.24(H-2)))^2.909
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            // Get the input value
+            const heightInput = document.getElementById('height');
+            const height = parseFloat(heightInput.value);
+            const errorMessage = document.getElementById('error-message');
+            const result = document.getElementById('result');
+            const treeContainer = document.getElementById('tree-container');
+            const treeIcon = document.getElementById('tree-icon');
+            
+            // Validate input
+            if (isNaN(height) || height < 0) {
+                errorMessage.style.display = 'block';
+                result.style.display = 'none';
+                treeContainer.style.display = 'none';
+                return;
+            }
+            
+            errorMessage.style.display = 'none';
+            
+            // Calculate using the formula: 100*(1-e^(-0.24(H-2)))^2.909
+            const exponent = -0.24 * (height - 2);
+            const eValue = Math.exp(exponent); // e^(-0.24(H-2))
+            const base = 1 - eValue; // (1 - e^(-0.24(H-2)))
+            const power = Math.pow(base, 2.909); // (1 - e^(-0.24(H-2)))^2.909
+            const output = 100 * power; // 100 * (1 - e^(-0.24(H-2)))^2.909
+            
+            // Display the result as percentage
+            document.getElementById('output-value').textContent = output.toFixed(2);
+            result.style.display = 'block';
+            
+            // Adjust tree size based on output
+            const minSize = 20; // minimum font size
+            const maxSize = 150; // maximum font size
+            const maxOutputValue = 100; // the maximum expected output value
+            
+            // Calculate font size proportional to output (between minSize and maxSize)
+            const normalizedOutput = Math.min(output, maxOutputValue) / maxOutputValue;
+            const fontSize = minSize + normalizedOutput * (maxSize - minSize);
+            
+            // Set tree size and display
+            treeIcon.style.fontSize = `${fontSize}px`;
+            treeContainer.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
